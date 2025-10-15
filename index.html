@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件著作权环境描述生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b',
+                        accent: '#10b981',
+                        neutral: '#f1f5f9',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-height {
+                transition: max-height 0.3s ease-in-out;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-file-text-o text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-dark">软件著作权环境描述生成器</h1>
+            </div>
+            <button id="exportBtn" class="bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-lg shadow transition-all duration-200 flex items-center space-x-2">
+                <i class="fa fa-download"></i>
+                <span>导出文档</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 介绍部分 -->
+        <section class="mb-10 bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
+            <h2 class="text-xl font-bold mb-4 text-primary flex items-center">
+                <i class="fa fa-info-circle mr-2"></i>使用说明
+            </h2>
+            <p class="text-gray-700 mb-4">
+                本工具帮助您生成软件著作权申请所需的环境描述文档。根据开发规模和部署类型提供精准选项：
+            </p>
+            <ul class="list-disc list-inside text-gray-700 space-y-1 ml-2">
+                <li>个人开发者通常使用普通笔记本电脑进行开发</li>
+                <li>企业/团队可能使用专业工作站或服务器集群</li>
+                <li>部署环境因软件类型不同，可选择服务器、PC、手机、单片机等</li>
+                <li>支持自定义配置以满足特殊需求</li>
+            </ul>
+        </section>
+
+        <!-- 开发者规模选择 -->
+        <section class="mb-10">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 text-primary flex items-center">
+                    <i class="fa fa-users mr-2"></i>选择开发者规模
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer developer-type" data-type="individual">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-user text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">个人开发者</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">使用普通笔记本电脑或个人PC进行开发的独立开发者</p>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer developer-type" data-type="enterprise">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-building text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">企业/团队开发</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">公司或团队使用专业设备和开发环境进行开发</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 预设组合选择 -->
+        <section class="mb-10" id="presetSection" style="display: none;">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 text-primary flex items-center">
+                    <i class="fa fa-th-large mr-2"></i>选择软件类型与部署环境
+                </h2>
+                <p class="text-gray-600 mb-4">请选择最符合您需求的软件类型与部署环境：</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- 预设1：桌面应用 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer preset-option" data-preset="desktop">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-desktop text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">桌面应用程序</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">部署在个人计算机(PC)上的桌面软件</p>
+                    </div>
+
+                    <!-- 预设2：移动应用 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer preset-option" data-preset="mobile">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-mobile text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">移动应用程序</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">部署在智能手机或平板设备上的应用</p>
+                    </div>
+
+                    <!-- 预设3：Web应用 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer preset-option" data-preset="web">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-globe text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">Web应用系统</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">部署在服务器上，通过浏览器访问的应用</p>
+                    </div>
+
+                    <!-- 预设4：服务器应用 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer preset-option" data-preset="server">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-server text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">服务器应用</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">运行在服务器上的后台服务或中间件</p>
+                    </div>
+
+                    <!-- 预设5：嵌入式应用 -->
+                    <div class="border border-gray-200 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer preset-option" data-preset="embedded">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-microchip text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">嵌入式应用</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">部署在单片机或嵌入式设备上的软件</p>
+                    </div>
+
+                    <!-- 自定义选项 -->
+                    <div class="border border-dashed border-gray-300 rounded-lg p-4 hover:border-primary hover:shadow-md transition-all cursor-pointer" id="customOption">
+                        <div class="flex items-center mb-2">
+                            <i class="fa fa-cogs text-primary text-xl mr-2"></i>
+                            <h3 class="font-semibold">自定义环境配置</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">手动选择或输入您的环境配置</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 自定义配置区域 -->
+        <section id="customConfig" class="mb-10" style="display: none;">
+            <!-- 开发的硬件环境 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="devHardware">
+                        <i class="fa fa-laptop mr-2"></i>4.1 开发的硬件环境
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="devHardware" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 个人开发者常用设备 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devLaptopLenovo" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devLaptopLenovo">笔记本: 联想拯救者系列</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devLaptopHp" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devLaptopHp">笔记本: 惠普暗影精灵系列</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devLaptopMac" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devLaptopMac">笔记本: MacBook Pro</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devDesktop" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devDesktop">台式机: 组装机/品牌机</label>
+                        </div>
+
+                        <!-- 企业/团队开发者常用设备 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devWorkstation" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devWorkstation">专业工作站: Dell Precision</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devServer" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devServer">开发服务器: 本地服务器</label>
+                        </div>
+
+                        <!-- 通用配置 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devOsWin" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devOsWin">操作系统: Windows 11</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devOsMac" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devOsMac">操作系统: macOS Ventura</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devCpuAmd" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devCpuAmd">CPU: AMD Ryzen 7/9</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devCpuIntel" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devCpuIntel">CPU: Intel Core i7/i9</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devRam16" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devRam16">内存: 16GB (个人常用)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devRam32" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devRam32">内存: 32GB/64GB (团队常用)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devHdd500" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devHdd500">硬盘: 500GB-1TB SSD</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="devHdd2t" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="devHdd2t">硬盘: 2TB+ SSD/企业级存储</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义开发硬件环境：</label>
+                        <div class="flex">
+                            <input type="text" id="customDevHardware" placeholder="例如：显卡: NVIDIA RTX 4070" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addDevHardware" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customDevHardwareList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 运行的硬件环境/部署环境 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="runHardware">
+                        <i class="fa fa-desktop mr-2"></i>4.2 运行的硬件环境/部署环境
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="runHardware" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- PC/桌面部署 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runPcDesktop" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runPcDesktop">PC/桌面: 普通个人计算机</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runPcConfig" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runPcConfig">配置要求: i5处理器, 8GB内存, 256GB硬盘</label>
+                        </div>
+
+                        <!-- 服务器部署 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runServerCloud" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runServerCloud">云服务器: 阿里云ECS/腾讯云CVM</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runServerPhysical" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runServerPhysical">物理服务器: 企业自建机房服务器</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runServerConfig" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runServerConfig">服务器配置: 8核16GB内存, 500GB SSD</label>
+                        </div>
+
+                        <!-- 移动设备部署 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runDeviceAndroid" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runDeviceAndroid">Android设备: 小米/华为/OPPO等</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runDeviceIphone" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runDeviceIphone">iOS设备: iPhone/iPad</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runDeviceConfig" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runDeviceConfig">移动设备配置: 6GB内存, 64GB存储</label>
+                        </div>
+
+                        <!-- 嵌入式设备部署 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runMcu" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runMcu">单片机: STM32/Arduino/ESP32</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runEmbedded" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runEmbedded">嵌入式系统: 工业控制板/物联网设备</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="runEmbeddedConfig" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="runEmbeddedConfig">嵌入式配置: 32位处理器, 128KB+内存</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义运行/部署硬件环境：</label>
+                        <div class="flex">
+                            <input type="text" id="customRunHardware" placeholder="例如：智能手表: 搭载鸿蒙系统的华为手表" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addRunHardware" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customRunHardwareList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 软件开发环境/工具 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="devEnv">
+                        <i class="fa fa-code mr-2"></i>4.4 软件开发环境 / 开发工具
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="devEnv" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolIntelliJ" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolIntelliJ">IntelliJ IDEA 2023.1</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolVsCode" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolVsCode">Visual Studio Code 1.83</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolAndroidStudio" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolAndroidStudio">Android Studio Giraffe</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolXcode" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolXcode">Xcode 15.0</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolPycharm" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolPycharm">PyCharm 2023.2</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolVisualStudio" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolVisualStudio">Visual Studio 2022</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolGit" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolGit">Git 2.41 (版本控制)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="toolDocker" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="toolDocker">Docker 24.0 (容器化工具)</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义开发工具：</label>
+                        <div class="flex">
+                            <input type="text" id="customDevTool" placeholder="例如：Eclipse 2023-09" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addDevTool" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customDevToolList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 运行平台/操作系统 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="osEnv">
+                        <i class="fa fa-windows mr-2"></i>4.5 该软件的运行平台 / 操作系统
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="osEnv" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 桌面操作系统 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osWindows" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osWindows">Windows 10/11 专业版</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osMacos" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osMacos">macOS 13/14 (Ventura/Sonoma)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osLinux" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osLinux">Linux (Ubuntu 22.04/CentOS 7)</label>
+                        </div>
+
+                        <!-- 移动操作系统 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osAndroid" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osAndroid">Android 12/13/14</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osIos" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osIos">iOS 16/17</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osHarmony" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osHarmony">HarmonyOS 3.0/4.0</label>
+                        </div>
+
+                        <!-- 服务器操作系统 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osServerWin" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osServerWin">Windows Server 2019/2022</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osServerLinux" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osServerLinux">Linux Server (Ubuntu Server/CentOS)</label>
+                        </div>
+
+                        <!-- 嵌入式操作系统 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osEmbedded" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osEmbedded">嵌入式Linux/RTOS</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="osMcu" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="osMcu">单片机固件/无操作系统</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义操作系统：</label>
+                        <div class="flex">
+                            <input type="text" id="customOs" placeholder="例如：FreeBSD 13.2" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addOs" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customOsList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 运行支撑环境/支持软件 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="supportEnv">
+                        <i class="fa fa-cubes mr-2"></i>4.6 软件运行支撑环境 / 支持软件
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="supportEnv" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 运行时环境 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportJava" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportJava">JRE/JDK 17</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportNet" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportNet">.NET Framework 6.0/7.0</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportPython" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportPython">Python 3.10/3.11</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportNode" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportNode">Node.js 18.x/20.x</label>
+                        </div>
+
+                        <!-- 数据库 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportMysql" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportMysql">MySQL 8.0</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportPostgres" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportPostgres">PostgreSQL 14/15</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportSqlite" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportSqlite">SQLite 3</label>
+                        </div>
+
+                        <!-- 服务器软件 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportNginx" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportNginx">Nginx 1.23</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportApache" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportApache">Apache 2.4</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="supportTomcat" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="supportTomcat">Tomcat 10</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义支持软件：</label>
+                        <div class="flex">
+                            <input type="text" id="customSupport" placeholder="例如：MongoDB 6.0" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addSupport" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customSupportList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测试环境 -->
+            <div class="bg-white rounded-xl shadow-lg mb-6 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-bold text-primary flex items-center cursor-pointer toggle-section" data-target="testEnv">
+                        <i class="fa fa-flask mr-2"></i>4.7 测试环境
+                        <i class="fa fa-chevron-down ml-auto transition-transform duration-300"></i>
+                    </h2>
+                </div>
+                <div id="testEnv" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 个人测试环境 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testLocal" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testLocal">本地测试: 开发机直接测试</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testVm" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testVm">虚拟机: VirtualBox/VMware</label>
+                        </div>
+
+                        <!-- 企业/团队测试环境 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testEcs" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testEcs">云服务器 ECS(按量付费/包月)</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testSpec" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testSpec">实例: ecs.s6 系列 V8 核 16GB</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testIo" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testIo">I/O 优化实例: IO优化实例</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testDisk" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testDisk">系统盘: 高效云盘 dev xvda100GB</label>
+                        </div>
+
+                        <!-- 通用测试环境配置 -->
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testRegion" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testRegion">地域: 华北/华东/华南等</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testCpuMem" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testCpuMem">CPU: 4-8 核 / 内存: 8-16GB</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testNetwork" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testNetwork">网络类型: 专有网络 / 带宽: 1-5Mbps</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="testOs" class="w-4 h-4 text-primary rounded mr-2">
+                            <label for="testOs">操作系统: 与生产环境一致</label>
+                        </div>
+                    </div>
+
+                    <!-- 自定义输入 -->
+                    <div class="mt-4">
+                        <label class="block text-gray-700 mb-2 font-medium">添加自定义测试环境：</label>
+                        <div class="flex">
+                            <input type="text" id="customTestEnv" placeholder="例如：测试工具: JMeter 5.6, Postman 10.15" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <button id="addTestEnv" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors">
+                                <i class="fa fa-plus"></i> 添加
+                            </button>
+                        </div>
+                        <div id="customTestEnvList" class="mt-3 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 预览区域 -->
+        <section class="mb-10">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 text-primary flex items-center">
+                    <i class="fa fa-eye mr-2"></i>文档预览
+                </h2>
+                <div id="preview" class="p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-[300px] text-gray-800 leading-relaxed">
+                    <p class="text-gray-500 italic">请先选择开发者规模和软件部署类型...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-file-text-o text-primary text-xl"></i>
+                        <span class="font-bold">软件著作权环境描述生成器</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">便捷生成符合规范的软件环境描述文档</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-question-circle"></i> 帮助
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-info-circle"></i> 关于
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-envelope"></i> 联系我们
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
+                &copy; 2023 软件著作权环境描述生成器 - 保留所有权利
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed bottom-4 right-4 bg-accent text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i class="fa fa-check-circle mr-2"></i>
+        <span id="notificationText">操作成功</span>
+    </div>
+
+    <script>
+        // 记录当前选择的开发者类型
+        let currentDeveloperType = '';
+
+        // 预设环境数据 - 区分个人和企业开发环境
+        const presets = {
+            individual: {
+                desktop: {
+                    devHardware: ['devLaptopLenovo', 'devOsWin', 'devCpuIntel', 'devRam16', 'devHdd500'],
+                    runHardware: ['runPcDesktop', 'runPcConfig'],
+                    devEnv: ['toolVsCode', 'toolGit'],
+                    osEnv: ['osWindows', 'osMacos'],
+                    supportEnv: ['supportNet', 'supportSqlite'],
+                    testEnv: ['testLocal', 'testVm']
+                },
+                mobile: {
+                    devHardware: ['devLaptopMac', 'devOsMac', 'devCpuIntel', 'devRam16', 'devHdd500'],
+                    runHardware: ['runDeviceAndroid', 'runDeviceIphone', 'runDeviceConfig'],
+                    devEnv: ['toolAndroidStudio', 'toolXcode', 'toolGit'],
+                    osEnv: ['osAndroid', 'osIos'],
+                    supportEnv: ['supportJava'],
+                    testEnv: ['testLocal', 'testVm']
+                },
+                web: {
+                    devHardware: ['devLaptopLenovo', 'devOsWin', 'devCpuAmd', 'devRam16', 'devHdd500'],
+                    runHardware: ['runServerCloud', 'runServerConfig'],
+                    devEnv: ['toolVsCode', 'toolGit', 'toolDocker'],
+                    osEnv: ['osWindows', 'osLinux'],
+                    supportEnv: ['supportNode', 'supportMysql', 'supportNginx'],
+                    testEnv: ['testVm', 'testEcs']
+                },
+                server: {
+                    devHardware: ['devLaptopLenovo', 'devOsLinux', 'devCpuIntel', 'devRam16', 'devHdd500'],
+                    runHardware: ['runServerCloud', 'runServerPhysical', 'runServerConfig'],
+                    devEnv: ['toolIntelliJ', 'toolVsCode', 'toolGit'],
+                    osEnv: ['osServerLinux', 'osServerWin'],
+                    supportEnv: ['supportJava', 'supportMysql', 'supportTomcat'],
+                    testEnv: ['testVm', 'testEcs']
+                },
+                embedded: {
+                    devHardware: ['devDesktop', 'devOsWin', 'devCpuIntel', 'devRam16', 'devHdd500'],
+                    runHardware: ['runMcu', 'runEmbedded', 'runEmbeddedConfig'],
+                    devEnv: ['toolVisualStudio', 'toolVsCode'],
+                    osEnv: ['osEmbedded', 'osMcu'],
+                    supportEnv: [],
+                    testEnv: ['testLocal']
+                }
+            },
+            enterprise: {
+                desktop: {
+                    devHardware: ['devWorkstation', 'devOsWin', 'devCpuIntel', 'devRam32', 'devHdd2t'],
+                    runHardware: ['runPcDesktop', 'runPcConfig'],
+                    devEnv: ['toolIntelliJ', 'toolVisualStudio', 'toolGit', 'toolDocker'],
+                    osEnv: ['osWindows', 'osMacos', 'osLinux'],
+                    supportEnv: ['supportNet', 'supportJava', 'supportMysql'],
+                    testEnv: ['testEcs', 'testSpec', 'testIo', 'testDisk']
+                },
+                mobile: {
+                    devHardware: ['devWorkstation', 'devOsMac', 'devCpuIntel', 'devRam32', 'devHdd2t'],
+                    runHardware: ['runDeviceAndroid', 'runDeviceIphone', 'runDeviceConfig'],
+                    devEnv: ['toolAndroidStudio', 'toolXcode', 'toolGit', 'toolDocker'],
+                    osEnv: ['osAndroid', 'osIos', 'osHarmony'],
+                    supportEnv: ['supportJava', 'supportNode'],
+                    testEnv: ['testEcs', 'testSpec', 'testIo']
+                },
+                web: {
+                    devHardware: ['devWorkstation', 'devServer', 'devOsLinux', 'devCpuIntel', 'devRam32', 'devHdd2t'],
+                    runHardware: ['runServerCloud', 'runServerConfig', 'runServerPhysical'],
+                    devEnv: ['toolVsCode', 'toolGit', 'toolDocker'],
+                    osEnv: ['osLinux', 'osServerLinux'],
+                    supportEnv: ['supportNode', 'supportMysql', 'supportPostgres', 'supportNginx'],
+                    testEnv: ['testEcs', 'testSpec', 'testIo', 'testDisk', 'testNetwork']
+                },
+                server: {
+                    devHardware: ['devServer', 'devOsLinux', 'devCpuIntel', 'devRam32', 'devHdd2t'],
+                    runHardware: ['runServerCloud', 'runServerPhysical', 'runServerConfig'],
+                    devEnv: ['toolIntelliJ', 'toolVsCode', 'toolGit', 'toolDocker'],
+                    osEnv: ['osServerLinux', 'osServerWin'],
+                    supportEnv: ['supportJava', 'supportMysql', 'supportPostgres', 'supportTomcat'],
+                    testEnv: ['testEcs', 'testSpec', 'testIo', 'testDisk', 'testNetwork']
+                },
+                embedded: {
+                    devHardware: ['devWorkstation', 'devDesktop', 'devOsWin', 'devCpuIntel', 'devRam32', 'devHdd2t'],
+                    runHardware: ['runMcu', 'runEmbedded', 'runEmbeddedConfig'],
+                    devEnv: ['toolVisualStudio', 'toolEclipse', 'toolGit'],
+                    osEnv: ['osEmbedded', 'osMcu', 'osLinux'],
+                    supportEnv: ['supportPython'],
+                    testEnv: ['testLocal', 'testVm']
+                }
+            }
+        };
+
+        // DOM元素加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 开发者类型选择事件
+            document.querySelectorAll('.developer-type').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选项的选中状态
+                    document.querySelectorAll('.developer-type').forEach(opt => {
+                        opt.classList.remove('border-primary', 'bg-primary/5');
+                    });
+
+                    // 添加当前选中状态
+                    this.classList.add('border-primary', 'bg-primary/5');
+
+                    // 记录选择的开发者类型
+                    currentDeveloperType = this.getAttribute('data-type');
+
+                    // 显示预设选择区域
+                    document.getElementById('presetSection').style.display = 'block';
+
+                    // 隐藏自定义配置区域（直到选择了具体预设）
+                    document.getElementById('customConfig').style.display = 'none';
+
+                    // 更新预览提示
+                    document.getElementById('preview').innerHTML = '<p class="text-gray-500 italic">请选择软件类型与部署环境...</p>';
+
+                    // 滚动到预设选择区域
+                    document.getElementById('presetSection').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // 预设选项点击事件
+            document.querySelectorAll('.preset-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 确保已选择开发者类型
+                    if (!currentDeveloperType) {
+                        showNotification('请先选择开发者规模', false);
+                        document.querySelector('.developer-type').scrollIntoView({ behavior: 'smooth' });
+                        return;
+                    }
+
+                    // 移除所有预设选项的选中状态
+                    document.querySelectorAll('.preset-option').forEach(opt => {
+                        opt.classList.remove('border-primary', 'bg-primary/5');
+                    });
+
+                    // 添加当前选中状态
+                    this.classList.add('border-primary', 'bg-primary/5');
+
+                    // 获取预设数据并应用
+                    const presetKey = this.getAttribute('data-preset');
+                    applyPreset(currentDeveloperType, presetKey);
+
+                    // 显示自定义配置区域
+                    document.getElementById('customConfig').style.display = 'block';
+
+                    // 更新预览
+                    updatePreview();
+
+                    // 滚动到配置区域
+                    document.getElementById('customConfig').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // 自定义选项点击事件
+            document.getElementById('customOption').addEventListener('click', function() {
+                // 确保已选择开发者类型
+                if (!currentDeveloperType) {
+                    showNotification('请先选择开发者规模', false);
+                    document.querySelector('.developer-type').scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+
+                // 移除所有预设选项的选中状态
+                document.querySelectorAll('.preset-option').forEach(opt => {
+                    opt.classList.remove('border-primary', 'bg-primary/5');
+                });
+
+                // 清空所有勾选
+                clearAllCheckboxes();
+
+                // 显示自定义配置区域
+                document.getElementById('customConfig').style.display = 'block';
+
+                // 更新预览
+                updatePreview();
+
+                // 滚动到配置区域
+                document.getElementById('customConfig').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // 折叠/展开区域
+            document.querySelectorAll('.toggle-section').forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+                    const icon = this.querySelector('.fa-chevron-down');
+
+                    // 切换显示/隐藏
+                    if (targetElement.style.maxHeight) {
+                        targetElement.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            // 初始化所有区域为展开状态
+            document.querySelectorAll('.toggle-section').forEach(toggle => {
+                const targetId = toggle.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                targetElement.style.maxHeight = targetElement.scrollHeight + 'px';
+            });
+
+            // 添加自定义项的事件监听
+            setupCustomAddListeners();
+
+            // 勾选框变化时更新预览
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', updatePreview);
+            });
+
+            // 导出按钮点击事件
+            document.getElementById('exportBtn').addEventListener('click', exportDocument);
+
+            // 滚动时改变导航栏样式
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 10) {
+                    header.classList.add('py-2');
+                    header.classList.remove('py-4');
+                } else {
+                    header.classList.add('py-4');
+                    header.classList.remove('py-2');
+                }
+            });
+        });
+
+        // 应用预设配置
+        function applyPreset(developerType, presetKey) {
+            // 清空所有勾选
+            clearAllCheckboxes();
+            clearAllCustomLists();
+
+            // 应用预设勾选
+            const preset = presets[developerType] && presets[developerType][presetKey];
+            if (preset) {
+                for (const [section, ids] of Object.entries(preset)) {
+                    ids.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.checked = true;
+                        }
+                    });
+                }
+            }
+        }
+
+        // 清空所有勾选框
+        function clearAllCheckboxes() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // 清空所有自定义列表
+        function clearAllCustomLists() {
+            document.getElementById('customDevHardwareList').innerHTML = '';
+            document.getElementById('customRunHardwareList').innerHTML = '';
+            document.getElementById('customDevToolList').innerHTML = '';
+            document.getElementById('customOsList').innerHTML = '';
+            document.getElementById('customSupportList').innerHTML = '';
+            document.getElementById('customTestEnvList').innerHTML = '';
+        }
+
+        // 设置自定义项添加按钮的事件监听
+        function setupCustomAddListeners() {
+            // 添加自定义开发硬件环境
+            document.getElementById('addDevHardware').addEventListener('click', function() {
+                addCustomItem('customDevHardware', 'customDevHardwareList');
+            });
+
+            // 添加自定义运行硬件环境
+            document.getElementById('addRunHardware').addEventListener('click', function() {
+                addCustomItem('customRunHardware', 'customRunHardwareList');
+            });
+
+            // 添加自定义开发工具
+            document.getElementById('addDevTool').addEventListener('click', function() {
+                addCustomItem('customDevTool', 'customDevToolList');
+            });
+
+            // 添加自定义操作系统
+            document.getElementById('addOs').addEventListener('click', function() {
+                addCustomItem('customOs', 'customOsList');
+            });
+
+            // 添加自定义支持软件
+            document.getElementById('addSupport').addEventListener('click', function() {
+                addCustomItem('customSupport', 'customSupportList');
+            });
+
+            // 添加自定义测试环境
+            document.getElementById('addTestEnv').addEventListener('click', function() {
+                addCustomItem('customTestEnv', 'customTestEnvList');
+            });
+
+            // 支持回车键添加
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const buttonId = this.id.replace('custom', 'add');
+                        document.getElementById(buttonId).click();
+                    }
+                });
+            });
+        }
+
+        // 添加自定义项
+        function addCustomItem(inputId, listId) {
+            const inputElement = document.getElementById(inputId);
+            const listElement = document.getElementById(listId);
+            const value = inputElement.value.trim();
+
+            if (value) {
+                // 创建自定义项元素
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200';
+                item.innerHTML = `
+                    <span>${value}</span>
+                    <button class="text-red-500 hover:text-red-700 transition-colors delete-custom">
+                        <i class="fa fa-times"></i>
+                    </button>
+                `;
+
+                // 添加到列表
+                listElement.appendChild(item);
+
+                // 清空输入框
+                inputElement.value = '';
+
+                // 添加删除事件
+                item.querySelector('.delete-custom').addEventListener('click', function() {
+                    listElement.removeChild(item);
+                    updatePreview();
+                });
+
+                // 更新预览
+                updatePreview();
+            }
+        }
+
+        // 更新预览区域
+        function updatePreview() {
+            let previewHtml = '';
+
+            // 开发的硬件环境
+            const devHardwareItems = getSectionItems('devHardware', 'customDevHardwareList');
+            if (devHardwareItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.1 开发的硬件环境</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                devHardwareItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 运行的硬件环境
+            const runHardwareItems = getSectionItems('runHardware', 'customRunHardwareList');
+            if (runHardwareItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.2 运行的硬件环境/部署环境</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                runHardwareItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 软件开发环境/工具
+            const devEnvItems = getSectionItems('devEnv', 'customDevToolList');
+            if (devEnvItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.4 软件开发环境 / 开发工具</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                devEnvItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 运行平台/操作系统
+            const osEnvItems = getSectionItems('osEnv', 'customOsList');
+            if (osEnvItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.5 该软件的运行平台 / 操作系统</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                osEnvItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 运行支撑环境/支持软件
+            const supportEnvItems = getSectionItems('supportEnv', 'customSupportList');
+            if (supportEnvItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.6 软件运行支撑环境 / 支持软件</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                supportEnvItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 测试环境
+            const testEnvItems = getSectionItems('testEnv', 'customTestEnvList');
+            if (testEnvItems.length > 0) {
+                previewHtml += '<h3 class="font-bold text-lg mt-4 mb-2">4.7 测试环境</h3>';
+                previewHtml += '<ul class="list-disc list-inside ml-4 space-y-1">';
+                testEnvItems.forEach(item => {
+                    previewHtml += `<li>${item}</li>`;
+                });
+                previewHtml += '</ul>';
+            }
+
+            // 如果没有选择任何内容
+            if (previewHtml === '') {
+                previewHtml = '<p class="text-gray-500 italic">请选择或输入环境配置，预览将显示在这里...</p>';
+            }
+
+            // 更新预览区域
+            document.getElementById('preview').innerHTML = previewHtml;
+        }
+
+        // 获取指定区域的所有选中项
+        function getSectionItems(sectionId, customListId) {
+            const items = [];
+
+            // 获取勾选的预设项
+            document.querySelectorAll(`#${sectionId} input[type="checkbox"]:checked`).forEach(checkbox => {
+                items.push(checkbox.nextElementSibling.textContent);
+            });
+
+            // 获取自定义添加的项
+            document.querySelectorAll(`#${customListId} div`).forEach(customItem => {
+                items.push(customItem.querySelector('span').textContent);
+            });
+
+            return items;
+        }
+
+        // 导出文档
+        function exportDocument() {
+            // 检查是否已选择开发者类型和配置
+            if (!currentDeveloperType) {
+                showNotification('请先选择开发者规模', false);
+                return;
+            }
+
+            // 获取预览内容
+            const previewContent = document.getElementById('preview').innerHTML;
+
+            // 如果没有内容，显示提示
+            if (previewContent.includes('请选择或输入环境配置') || previewContent.includes('请选择软件类型与部署环境')) {
+                showNotification('请先选择或输入环境配置', false);
+                return;
+            }
+
+            // 转换为纯文本格式
+            let textContent = '软件环境描述文档\n\n';
+
+            // 开发的硬件环境
+            const devHardwareItems = getSectionItems('devHardware', 'customDevHardwareList');
+            if (devHardwareItems.length > 0) {
+                textContent += '4.1 开发的硬件环境\n';
+                devHardwareItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 运行的硬件环境
+            const runHardwareItems = getSectionItems('runHardware', 'customRunHardwareList');
+            if (runHardwareItems.length > 0) {
+                textContent += '4.2 运行的硬件环境/部署环境\n';
+                runHardwareItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 软件开发环境/工具
+            const devEnvItems = getSectionItems('devEnv', 'customDevToolList');
+            if (devEnvItems.length > 0) {
+                textContent += '4.4 软件开发环境 / 开发工具\n';
+                devEnvItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 运行平台/操作系统
+            const osEnvItems = getSectionItems('osEnv', 'customOsList');
+            if (osEnvItems.length > 0) {
+                textContent += '4.5 该软件的运行平台 / 操作系统\n';
+                osEnvItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 运行支撑环境/支持软件
+            const supportEnvItems = getSectionItems('supportEnv', 'customSupportList');
+            if (supportEnvItems.length > 0) {
+                textContent += '4.6 软件运行支撑环境 / 支持软件\n';
+                supportEnvItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 测试环境
+            const testEnvItems = getSectionItems('testEnv', 'customTestEnvList');
+            if (testEnvItems.length > 0) {
+                textContent += '4.7 测试环境\n';
+                testEnvItems.forEach(item => {
+                    textContent += `	${item}\n`;
+                });
+                textContent += '\n';
+            }
+
+            // 创建Blob对象
+            const blob = new Blob([textContent], { type: 'text/plain' });
+
+            // 创建下载链接
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '软件环境描述文档.txt';
+            document.body.appendChild(a);
+            a.click();
+
+            // 清理
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+
+            // 显示成功提示
+            showNotification('文档导出成功！');
+        }
+
+        // 显示通知
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+
+            // 设置消息内容
+            notificationText.textContent = message;
+
+            // 设置样式
+            if (isSuccess) {
+                notification.className = 'fixed bottom-4 right-4 bg-accent text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-0 opacity-100 transition-all duration-300 flex items-center';
+            } else {
+                notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-0 opacity-100 transition-all duration-300 flex items-center';
+            }
+
+            // 3秒后隐藏
+            setTimeout(() => {
+                notification.className = 'fixed bottom-4 right-4 bg-accent text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
