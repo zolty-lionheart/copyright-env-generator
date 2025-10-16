@@ -2,7 +2,7 @@
 本工程由AGI生成，酌情使用。
 这是一个用于生成软件著作权申请所需环境描述文档的网页工具，旨在帮助开发者快速创建符合规范的软件环境描述内容，简化软件著作权申请流程。
 
-![软件演示](https://github.com/zolty-lionheart/copyright-env-generator/blob/master/intro.gif)
+![软件演示](https://raw.githubusercontent.com/zolty-lionheart/copyright-env-generator/refs/heads/master/intro.gif)
 
 ## Let's try！
 [https://zolty-lionheart.github.io/copyright-env-generator/](https://zolty-lionheart.github.io/copyright-env-generator/)
